@@ -3,9 +3,9 @@ using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Net.Http.Headers;
-using src.Controllers.Dtos;
+using Products.Controllers.Dtos;
 
-namespace src.Integrations
+namespace SolidApi_HttpClient.Integrations
 {
     public class ProductService
     {
