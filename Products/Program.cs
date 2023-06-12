@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddTransient<FirstMiddleware>();
 builder.Services.AddControllers();
 builder.Services.Configure<SimTechConfigurations>(builder.Configuration.GetSection(SimTechConfigurations.sectionName));
-builder.Services.AddDbContext<PlaygroundDb>();
+builder.Services.AddPlayGroundDb(builder.Configuration);
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");

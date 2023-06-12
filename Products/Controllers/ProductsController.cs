@@ -1,8 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Products.Configurations;
 using Products.Controllers.Dtos;
+using Products.Database;
 
 namespace Products.Controllers
 {
@@ -15,17 +17,18 @@ namespace Products.Controllers
         private IWebHostEnvironment _environment;
         private IConfiguration _configuration;
         private SimTechConfigurations _simTechConfigurations;
-        public ProductsController(IWebHostEnvironment environment, IConfiguration configuration, IOptions<SimTechConfigurations> options)
+        private PlaygroundDb _db;
+
+        public ProductsController(PlaygroundDb db, IWebHostEnvironment environment, IConfiguration configuration, IOptions<SimTechConfigurations> options)
         {
+            _db = db;
             _environment = environment;
             _configuration = configuration;
             _simTechConfigurations = options.Value;
         }
-        //List<string> products = new List<string> { "product A", "product B" };
-        static List<Product> products = new List<Product> { new Product { Name = "Product A", Price = 100, Sku = "PA" } };
 
         [HttpGet]
-        public IActionResult Get([FromHeader] string name)
+        public async Task<IActionResult> Get([FromHeader] string? name)
         {
             Console.WriteLine("Env: " + _environment.EnvironmentName);
             if (_configuration["ProductsAPIAllowed"] == "False")
@@ -34,7 +37,12 @@ namespace Products.Controllers
             }
             if (_environment.IsDevelopment())
             {
-                var product = products.Find(item => item.Name == name);
+                if (string.IsNullOrEmpty(name))
+                {
+                    return Ok(_db.Products.ToList());
+                }
+
+                var product = await _db.Products.Where(item => item.Name == name).SingleOrDefaultAsync();
 
                 if (product == null)
                     return BadRequest("products not found!");
@@ -46,9 +54,9 @@ namespace Products.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Product product)
+        public async Task<IActionResult> PostAsync([FromBody] Product product)
         {
-            Console.WriteLine(JsonSerializer.Serialize(HttpContext.Request.Headers)); 
+            Console.WriteLine(JsonSerializer.Serialize(HttpContext.Request.Headers));
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -57,11 +65,9 @@ namespace Products.Controllers
                     .ToList();
                 return BadRequest(errors);
             }
-            
 
-            product.Name = _simTechConfigurations.CompanyName;
-            product.Sku = _simTechConfigurations.Size;
-            products.Add(product);
+            _db.Products.Add(product);
+            await _db.SaveChangesAsync();
             return Ok("Product Created!");
         }
     }

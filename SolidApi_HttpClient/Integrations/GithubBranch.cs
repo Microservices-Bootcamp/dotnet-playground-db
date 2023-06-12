@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace src.Products.Integrations
+namespace SolidApi_HttpClient.Products.Integrations
 {
     public class GithubBranch
     {

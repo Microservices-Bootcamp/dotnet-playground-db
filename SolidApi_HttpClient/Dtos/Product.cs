@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Products.Controllers.Dtos
+namespace SolidApi_HttpClient.Dtos
 {
     public class Product
     {

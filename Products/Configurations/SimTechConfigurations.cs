@@ -7,4 +7,3 @@
         public string Size { get; set; } = string.Empty;
     }
 }
-

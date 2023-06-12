@@ -1,7 +1,8 @@
 using Microsoft.Net.Http.Headers;
-using src.Products.Integrations;
+using SolidApi_HttpClient.Integrations;
+using SolidApi_HttpClient.Products.Integrations;
 
-namespace Products.Integrations
+namespace SolidApi_HttpClient.Integrations
 {
     public class GithubService
     {
